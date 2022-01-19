@@ -685,7 +685,16 @@ static id _sharedInstance;
     // case where the user has denied permission to access location services and the request is immediately completed with the appropriate error.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (locationRequest.block) {
-            locationRequest.block(currentLocation, achievedAccuracy, status);
+            if (currentLocation != nil) {
+                if (currentLocation.coordinate.latitude == 0.0 || currentLocation.coordinate.longitude == 0.0) {
+                    locationRequest.block(nil, achievedAccuracy, INTULocationStatusTimedOut);
+                }else{
+                    locationRequest.block(currentLocation, achievedAccuracy, status);
+                }
+            }else{
+                locationRequest.block(currentLocation, achievedAccuracy, status);
+            }
+            
         }
     });
     
